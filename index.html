@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Details</title>
+    <style>
+        
+        body {
+            font-family: Arial, sans-serif;
+        }
+    
+        form {
+            margin-bottom: 20px;
+        }
+    
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+    
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+    
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+    
+        th {
+            background-color: #f2f2f2;
+        }
+    
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    
+        th:first-child, td:first-child {
+            width: 30%;
+        }
+    
+        th:nth-child(2), td:nth-child(2) {
+            width: 30%;
+        }
+    
+        th:nth-child(3), td:nth-child(3) {
+            width: 40%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Employee Details</h1>
+
+    <form id="employee-form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required><br>
+
+        <label for="id">ID:</label>
+        <input type="text" id="id" required><br>
+
+        <label for="salary">Salary:</label>
+        <input type="number" id="salary" required><br>
+
+        <button type="button" id="add-button">Add Employee</button>
+    
+       
+    </form>
+
+    <table id="employee-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Salary</th>
+                <th>Action</th> 
+            </tr>
+        </thead>
+        <tbody id="employee-list">
+            
+        </tbody>
+    </table>
+    
+   
+    <script>
+    
+    let userData = JSON.parse(localStorage.getItem('userData')) || [];
+    
+    const name = document.getElementById('name');
+    const id = document.getElementById('id');
+    const salaryInput = document.getElementById('salary');
+    const addButton = document.getElementById('add-button');
+    const tableBody = document.getElementById('employee-list');
+    let selectedRow = null;
+    
+
+    function populateTable() {
+        tableBody.innerHTML = '';
+        userData.forEach((data, index) => {
+            const newRow = tableBody.insertRow();
+            newRow.innerHTML = `<td>${data.name}</td><td>${data.id}</td><td>${data.salary}</td><td><button onclick="editRow(${index})">Edit</button></td><td><button onclick="deleteRow(${index})">Delete</button></td>`;
+        });
+    }
+    populateTable();
+
+    addButton.addEventListener('click', function () {
+
+        const nameValue = name.value;
+        const idValue = id.value;
+        const salValue = parseFloat(salaryInput.value);
+
+        const existingEmployee = userData.some(user => user.name === nameValue);
+        
+
+    if (existingEmployee) {
+       window.alert("User Already Exist")
+} 
+    else{
+
+    
+   
+
+
+
+
+        if (selectedRow !== null) {
+            const editedData = userData[selectedRow];
+            editedData.name = nameValue;
+            editedData.id = idValue;
+            editedData.salary = salValue;
+
+            selectedRow = null;
+        } else {
+            const id = userData.length + 1;
+            userData.push({
+                name: nameValue,
+                id: id,
+                salary: salValue
+            });
+        }
+
+        localStorage.setItem('userData', JSON.stringify(userData));
+        populateTable();
+
+        name.value = '';
+        id.value = '';
+        salaryInput.value = '';}}
+    );
+
+    
+
+    function editRow(index) {
+        selectedRow = index;
+        const data = userData[index];
+        name.value = data.name;
+        id.value = data.id;
+        salaryInput.value = data.salary;
+        userData.splice(index, 1);
+    }
+
+function deleteRow(index) {
+        userData.splice(index, 1);
+        localStorage.setItem('userData', JSON.stringify(userData));
+        populateTable();
+    }
+
+</script>
+
+
+</body>
+</html>
